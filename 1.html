@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光影视界 | 原创摄影作品集</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text-light: #f5f5f5;
+            --text-gray: #aaaaaa;
+            --accent: #4a90e2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* 导航栏 */
+        header {
+            background-color: rgba(26, 26, 26, 0.9);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav li {
+            margin-left: 2rem;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        .search-container {
+            display: flex;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: var(--text-light);
+            width: 200px;
+        }
+
+        .search-box::placeholder {
+            color: var(--text-gray);
+        }
+
+        /* 主要内容 */
+        main {
+            margin-top: 80px;
+            padding: 2rem;
+        }
+
+        /* 作品网格 */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .portfolio-item {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .portfolio-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .portfolio-info {
+            padding: 1rem;
+        }
+
+        .portfolio-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-tags {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background-color: rgba(74, 144, 226, 0.2);
+            color: var(--accent);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 图片查看器 */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .viewer-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .viewer-img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .viewer-close, .viewer-fullscreen {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .viewer-close {
+            top: 10px;
+            right: 10px;
+        }
+
+        .viewer-fullscreen {
+            top: 60px;
+            right: 10px;
+        }
+
+        /* 评论区 */
+        .comments-section {
+            margin-top: 2rem;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .comments-title {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 2rem;
+        }
+
+        .comment-input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            padding: 1rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .comment-submit {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            align-self: flex-end;
+            transition: background-color 0.3s;
+        }
+
+        .comment-submit:hover {
+            background-color: #3a7bc8;
+        }
+
+        .comment {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-date {
+            color: var(--text-gray);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 关于我页面 */
+        .about-section {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+        }
+
+        .about-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text {
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .social-link {
+            color: var(--text-light);
+            margin: 0 1rem;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .social-link:hover {
+            color: var(--accent);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+            }
+
+            nav li {
+                margin: 0 0.5rem;
+            }
+
+            .search-container {
+                margin-top: 1rem;
+                width: 100%;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="logo">光影视界</div>
+        <nav>
+            <ul>
+                <li><a href="#" class="nav-link" data-page="portfolio">作品集</a></li>
+                <li><a href="#" class="nav-link" data-page="about">关于我</a></li>
+            </ul>
+        </nav>
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="搜索标签...">
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main>
+        <!-- 作品集页面 -->
+        <section id="portfolio-page" class="page active">
+            <div class="portfolio-grid" id="portfolio-grid">
+                <!-- 作品项将通过JavaScript动态生成 -->
+            </div>
+
+            <!-- 评论区 -->
+            <div class="comments-section">
+                <h2 class="comments-title">评论</h2>
+                <form class="comment-form">
+                    <textarea class="comment-input" placeholder="分享您的想法..."></textarea>
+                    <button type="submit" class="comment-submit">发布评论</button>
+                </form>
+                <div class="comments-list" id="comments-list">
+                    <!-- 评论将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 关于我页面 -->
+        <section id="about-page" class="page">
+            <div class="about-section">
+                <div class="about-header">
+                    <h1>关于我</h1>
+                </div>
+                <div class="about-content">
+                    <img src="https://via.placeholder.com/200" alt="摄影师" class="profile-img">
+                    <div class="about-text">
+                        <p>我是一名专注于自然风光和城市景观的摄影师。通过镜头捕捉光影的变幻和世界的细节，是我表达内心情感的方式。</p>
+                        <p>我的作品曾在多个国际摄影展中展出，并获得多项荣誉。我相信摄影不仅是记录，更是与观众分享视角和情感的艺术形式。</p>
+                        <p>在这个作品中集，我希望能与您分享我的视觉世界，一起探索光影的无限可能。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 图片查看器 -->
+    <div class="image-viewer" id="image-viewer">
+        <div class="viewer-content">
+            <img src="" alt="" class="viewer-img" id="viewer-img">
+            <button class="viewer-close" id="viewer-close">×</button>
+            <button class="viewer-fullscreen" id="viewer-fullscreen">⛶</button>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="social-links">
+            <a href="#" class="social-link">📷</a>
+            <a href="#" class="social-link">📘</a>
+            <a href="#" class="social-link">📱</a>
+        </div>
+        <p>&copy; 2023 光影视界 | 原创摄影作品集</p>
+    </footer>
+
+    <script>
+        // 示例作品数据
+        const portfolioItems = [
+            {
+                id: 1,
+                title: "山间晨曦",
+                image: "https://via.placeholder.com/600x400/4a90e2/ffffff?text=山间晨曦",
+                tags: ["自然", "风景", "日出"]
+            },
+            {
+                id: 2,
+                title: "城市之光",
+                image: "https://via.placeholder.com/600x400/e24a90/ffffff?text=城市之光",
+                tags: ["城市", "夜景", "建筑"]
+            },
+            {
+                id: 3,
+                title: "海岸日落",
+                image: "https://via.placeholder.com/600x400/90e24a/ffffff?text=海岸日落",
+                tags: ["自然", "海洋", "日落"]
+            },
+            {
+                id: 4,
+                title: "森林深处",
+                image: "https://via.placeholder.com/600x400/e2e24a/ffffff?text=森林深处",
+                tags: ["自然", "森林", "探险"]
+            },
+            {
+                id: 5,
+                title: "街头人文",
+                image: "https://via.placeholder.com/600x400/4ae2e2/ffffff?text=街头人文",
+                tags: ["人文", "街头", "纪实"]
+            },
+            {
+                id: 6,
+                title: "抽象几何",
+                image: "https://via.placeholder.com/600x400/e24a4a/ffffff?text=抽象几何",
+                tags: ["抽象", "几何", "创意"]
+            }
+        ];
+
+        // 示例评论数据
+        let comments = [
+            {
+                id: 1,
+                author: "摄影爱好者",
+                date: "2023-10-15",
+                content: "这些作品真是太棒了！特别喜欢《山间晨曦》的光影处理。"
+            },
+            {
+                id: 2,
+                author: "艺术评论家",
+                date: "2023-10-12",
+                content: "您的作品展现了独特的视角和深厚的技术功底。"
+            }
+        ];
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 渲染作品集
+            renderPortfolio();
+            
+            // 渲染评论
+            renderComments();
+            
+            // 设置导航事件
+            setupNavigation();
+            
+            // 设置搜索功能
+            setupSearch();
+            
+            // 设置评论提交
+            setupCommentSubmission();
+            
+            // 设置图片查看器
+            setupImageViewer();
+        });
+
+        // 渲染作品集
+        function renderPortfolio() {
+            const portfolioGrid = document.getElementById('portfolio-grid');
+            portfolioGrid.innerHTML = '';
+            
+            portfolioItems.forEach(item => {
+                const portfolioItem = document.createElement('div');
+                portfolioItem.className = 'portfolio-item';
+                portfolioItem.dataset.id = item.id;
+                
+                portfolioItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.title}" class="portfolio-img">
+                    <div class="portfolio-info">
+                        <h3 class="portfolio-title">${item.title}</h3>
+                        <div class="portfolio-tags">
+                            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                portfolioGrid.appendChild(portfolioItem);
+                
+                // 添加点击事件打开图片查看器
+                portfolioItem.addEventListener('click', () => {
+                    openImageViewer(item.image, item.title);
+                });
+            });
+        }
+
+        // 渲染评论
+        function renderComments() {
+            const commentsList = document.getElementById('comments-list');
+            commentsList.innerHTML = '';
+            
+            comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment';
+                
+                commentElement.innerHTML = `
+                    <div class="comment-author">${comment.author}</div>
+                    <div class="comment-date">${comment.date}</div>
+                    <div class="comment-content">${comment.content}</div>
+                `;
+                
+                commentsList.appendChild(commentElement);
+            });
+        }
+
+        // 设置导航
+        function setupNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetPage = this.dataset.page;
+                    
+                    // 隐藏所有页面
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    
+                    // 显示目标页面
+                    document.getElementById(`${targetPage}-page`).classList.add('active');
+                    
+                    // 更新活跃导航链接
+                    navLinks.forEach(navLink => {
+                        navLink.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // 设置搜索功能
+        function setupSearch() {
+            const searchBox = document.querySelector('.search-box');
+            
+            searchBox.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                const filteredItems = portfolioItems.filter(item => {
+                    return item.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+                           item.title.toLowerCase().includes(searchTerm);
+                });
+                
+                // 重新渲染过滤后的作品
+                const portfolioGrid = document.getElementById('portfolio-grid');
+                portfolioGrid.innerHTML = '';
+                
+                filteredItems.forEach(item => {
+                    const portfolioItem = document.createElement('div');
+                    portfolioItem.className = 'portfolio-item';
+                    portfolioItem.dataset.id = item.id;
+                    
+                    portfolioItem.innerHTML = `
+                        <img src="${item.image}" alt="${item.title}" class="portfolio-img">
+                        <div class="portfolio-info">
+                            <h3 class="portfolio-title">${item.title}</h3>
+                            <div class="portfolio-tags">
+                                ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                    
+                    portfolioGrid.appendChild(portfolioItem);
+                    
+                    // 添加点击事件打开图片查看器
+                    portfolioItem.addEventListener('click', () => {
+                        openImageViewer(item.image, item.title);
+                    });
+                });
+            });
+        }
+
+        // 设置评论提交
+        function setupCommentSubmission() {
+            const commentForm = document.querySelector('.comment-form');
+            const commentInput = document.querySelector('.comment-input');
+            
+            commentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const content = commentInput.value.trim();
+                
+                if (content) {
+                    // 创建新评论
+                    const newComment = {
+                        id: comments.length + 1,
+                        author: "访客",
+                        date: new Date().toISOString().split('T')[0],
+                        content: content
+                    };
+                    
+                    // 添加到评论列表
+                    comments.unshift(newComment);
+                    
+                    // 重新渲染评论
+                    renderComments();
+                    
+                    // 清空输入框
+                    commentInput.value = '';
+                }
+            });
+        }
+
+        // 设置图片查看器
+        function setupImageViewer() {
+            const imageViewer = document.getElementById('image-viewer');
+            const viewerImg = document.getElementById('viewer-img');
+            const viewerClose = document.getElementById('viewer-close');
+            const viewerFullscreen = document.getElementById('viewer-fullscreen');
+            
+            // 关闭查看器
+            viewerClose.addEventListener('click', () => {
+                imageViewer.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // 点击背景关闭查看器
+            imageViewer.addEventListener('click', (e) => {
+                if (e.target === imageViewer) {
+                    imageViewer.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // 全屏功能
+            viewerFullscreen.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    if (imageViewer.requestFullscreen) {
+                        imageViewer.requestFullscreen();
+                    } else if (imageViewer.webkitRequestFullscreen) {
+                        imageViewer.webkitRequestFullscreen();
+                    } else if (imageViewer.msRequestFullscreen) {
+                        imageViewer.msRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                }
+            });
+        }
+
+        // 打开图片查看器
+        function openImageViewer(imageSrc, title) {
+            const imageViewer = document.getElementById('image-viewer');
+            const viewerImg = document.getElementById('viewer-img');
+            
+            viewerImg.src = imageSrc;
+            viewerImg.alt = title;
+            imageViewer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    </script>
+</body>
+</html>
